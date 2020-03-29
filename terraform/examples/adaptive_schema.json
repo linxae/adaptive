@@ -1,0 +1,32 @@
+{
+    "format_version": "0.1",
+    "provider_schemas": {
+        "adaptive": {
+            "provider": {
+                "version": 0,
+                "block": {
+                    "attributes": {
+                        "endpoint": {
+                            "type": "string",
+                            "description": "The access endpoint for API operations.",
+                            "optional": true
+                        }
+                    }
+                }
+            },
+            "resource_schemas": {
+                "adaptive_server": {
+                    "version": 0,
+                    "block": {
+                        "attributes": {
+                            "dns": {
+                                "type": "string",
+                                "required": true
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

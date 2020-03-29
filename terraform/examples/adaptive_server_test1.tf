@@ -1,3 +1,7 @@
 resource "adaptive_server" "my-server" {
-    address = "1.2.3.4"
+    dns = "myserver.example.com"
+}
+
+provider "adaptive" {
+  endpoint = "https://localhost:5001/privatecloud/provider"
 }

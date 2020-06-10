@@ -23,7 +23,7 @@ namespace AdaptiveProvider.TowerAnsible
         private readonly Uri _towerUri;
         private NetworkCredential _credential;
         private AuthenticationMethod _authenticationMethod;
-        
+
         public TowerService(string cs) : this(cs.Url(), cs.AuthenticationMethod(), cs.Credential(), cs.SkipCertificateCheck())
         {
         }
@@ -56,11 +56,11 @@ namespace AdaptiveProvider.TowerAnsible
 
             if (_authenticationMethod == AuthenticationMethod.Basic)
             {
-                if (credential == null || string.IsNullOrEmpty(credential.UserName) || string.IsNullOrEmpty(credential.Password)) 
+                if (credential == null || string.IsNullOrEmpty(credential.UserName) || string.IsNullOrEmpty(credential.Password))
                 {
                     throw new ArgumentNullException("User name and password are required for basic authentication");
                 }
-                
+
                 var userName = HttpUtility.UrlEncode(credential.UserName);
                 var password = HttpUtility.UrlEncode(credential.Password);
                 var credentialPair = Encoding.UTF8.GetBytes($"{userName}:{password}");
@@ -156,12 +156,12 @@ namespace AdaptiveProvider.TowerAnsible
             return _apiMap;
         }
 
-        public async Task<Job> LaunchJobTemplateAsync(int templateId)
+        public async Task<Job> LaunchJobTemplateAsync(int templateId, object extraVariables)
         {
             await EnsureAuthenticated();
 
-            JobLaunch launch = new JobLaunch();
-            var job = await Post<JobLaunch, Job>($"{_apiMap.Job_templates}{templateId}/launch/", launch);
+            var payload = new JobLaunch(extraVariables);
+            var job = await Post<JobLaunch, Job>($"{_apiMap.Job_templates}{templateId}/launch/", payload);
 
             while (job.Status == "waiting" || job.Status == "pending" || job.Status == "running")
             {
@@ -178,33 +178,16 @@ namespace AdaptiveProvider.TowerAnsible
             return job;
         }
 
-        //public Job LaunchJobTemplateAsync(int templateId)
-        //{
-        //    EnsureAuthenticated().Wait();
-
-        //    JobLaunch launch = new JobLaunch();
-        //    var job = Post<JobLaunch, Job>($"{_apiMap.Job_templates}{templateId}/launch/", launch).Result;
-
-        //    while (job.Status == "waiting" || job.Status == "pending" || job.Status == "running")
-        //    {
-        //        Task.Delay(250).Wait();
-        //        job = Get<Job>(job.JobUrl).Result;
-        //        Console.WriteLine($"Job {job.Name} status is {job.Status}");
-        //    }
-
-        //    if (job.Failed || job.Status != "successful")
-        //    {
-        //        throw new Exception($"Job {job.JobId} didn't complete successfully: {job.Status}");
-        //    }
-
-        //    return job;
-        //}
-
         public Job LaunchJobTemplate(int templateId)
+        {
+            return LaunchJobTemplate(templateId, new { });
+        }
+
+        public Job LaunchJobTemplate(int templateId, object extraVariables)
         {
             try
             {
-                var job = LaunchJobTemplateAsync(templateId).Result;
+                var job = LaunchJobTemplateAsync(templateId, extraVariables).Result;
                 return job;
             }
             catch (AggregateException ex)
@@ -214,6 +197,24 @@ namespace AdaptiveProvider.TowerAnsible
             catch (Exception ex)
             {
                 throw ex;
+            }
+        }
+
+        public Job RunJobTemplate(int templateId, object extraVariables)
+        {
+            try
+            {
+                var job = LaunchJobTemplate(templateId, extraVariables);
+                return job;
+            }
+            catch (Exception ex)
+            {
+                return new Job()
+                {
+                    Failed = true,
+                    Status = "failed",
+                    Description = ex.Message
+                };
             }
         }
 

@@ -1,14 +1,16 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Net;
 using AdaptiveProvider.Core.Configuration;
+using System.Text.Json;
+using System;
 
 namespace AdaptiveProvider.TowerAnsible.Tests
 {
     [TestClass]
     public class TowerServiceTests
     {
-        private string _url = "https://ec2-xxx.compute.amazonaws.com/";
-        private NetworkCredential _basicCredential = new NetworkCredential("admin", "a******3");
+        private string _url = "https://ec2-18-216-9-148.us-east-2.compute.amazonaws.com/";
+        private NetworkCredential _basicCredential = new NetworkCredential("admin", "azerty*123");
         private NetworkCredential _oAuthCredential = new NetworkCredential("", "fULfaR8a4j***********Ug2mmo8m");
 
         [TestMethod]
@@ -74,6 +76,37 @@ namespace AdaptiveProvider.TowerAnsible.Tests
 
                 Assert.IsFalse(job.Failed);
             }
+        }
+
+        [TestMethod]
+        public void LaunchJobTemplateWithExtraVarsTest()
+        {
+            using (var ts = new TowerService(_url, _basicCredential, skipCertificateValidation: true))
+            {
+                var job = ts.LaunchJobTemplate(8, new {user_name = "VS" });
+
+                Assert.IsFalse(job.Failed);
+            }
+        }
+
+        [TestMethod]
+        public void SerializeJobLaunch()
+        {
+            var payload = new JobLaunch() {
+                ExtraVars = new { UserName = "admin" }
+            };
+
+            var FilledContent = JsonSerializer.Serialize<JobLaunch>(payload);
+
+            Console.WriteLine("Filled Variables:");
+            Console.WriteLine(FilledContent);
+
+            var emptyPayload = new JobLaunch();
+
+            var emptyContent = JsonSerializer.Serialize<JobLaunch>(emptyPayload);
+
+            Console.WriteLine("Empty Variables:");
+            Console.WriteLine(emptyContent);
         }
     }
 }

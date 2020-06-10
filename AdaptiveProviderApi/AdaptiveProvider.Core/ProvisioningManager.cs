@@ -44,6 +44,12 @@ namespace AdaptiveProvider.Core
                 catch (Exception ex)
                 {
                     _logger.LogWarning($"Service plugin '{serviceConfig.Value.ServicePlugin}' initialization failed: {ex.Message}");
+
+                    if (ex.InnerException != null)
+                    {
+                        _logger.LogWarning($"More details>> : {ex.InnerException.Message}");
+                    }
+                    
                 }
                 
             }

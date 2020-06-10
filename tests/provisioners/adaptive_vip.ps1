@@ -1,4 +1,14 @@
-﻿function BuildFilePath([Parameter(Mandatory=$true)] $Resource)
+﻿class extra_vars 
+{
+    [String]$user_name
+
+    extra_vars([String]$user_name)
+    {
+        $this.user_name = $user_name
+    }
+}
+
+function BuildFilePath([Parameter(Mandatory=$true)] $Resource)
 {
     return "C:\github\linxae\adaptive\tests\.output\$($Resource.Type)_$($Resource.Id).json"
 }
@@ -20,10 +30,16 @@ function Create([Parameter(Mandatory=$true)] $Resource)
     $Resource.Data.name = $Resource.Data.zone.ToUpper().Substring(0,1) + [DateTime]::Now.Minute.ToString("d2") + [DateTime]::Now.Second.ToString("d2")
     $Resource.Id = $Resource.Data.name
 
-    $job = $Resource.RequiredServices["AnsibleTower"].LaunchJobTemplate(7);
-	
-    Set-Content (BuildFilePath $Resource) -value (ConvertTo-Json $Resource)
+    $jobInput = [extra_vars]::New("$($Resource.Data.name)")
+    $job = $Resource.RequiredServices["AnsibleTower"].RunJobTemplate(8, $jobInput);
     Set-Content (BuildJobFilePath $Resource) -value (ConvertTo-Json $job)
+
+    if(!$job -or $job.Failed)
+    {
+        throw "Failed creating resource $($Resource.Data.name). $job.Description" 
+    }
+	
+    Set-Content (BuildFilePath $Resource) -value (ConvertTo-Json $Resource)    
 
 	return $Resource
 }

@@ -15,6 +15,7 @@ namespace AdaptiveProvider.Utils
         private const string LaunchTowerJobCmdName = "--launchtowerjob";
         private const string LaunchTowerJobConnectionStringArgName = "-connectionstring:";
         private const string LaunchTowerJobTemplatedIdArgName = "-jobtemplatedid:";
+        private const string LaunchTowerJobExtraVarsArgName = "-extravars:";
 
 
         static void Main(string[] args)
@@ -51,17 +52,17 @@ namespace AdaptiveProvider.Utils
             Console.WriteLine(">>>>> Ansible Tower Job Template Tool <<<<<");
             int id = 0;
 
-            if (args.Length != 3 || 
+            if (args.Length < 3 ||
                 !args[1].ToLower().StartsWith(LaunchTowerJobConnectionStringArgName) ||
                 !args[2].ToLower().StartsWith(LaunchTowerJobTemplatedIdArgName))
             {
-                Console.WriteLine($"Usage: {AppDomain.CurrentDomain.FriendlyName} {LaunchTowerJobCmdName} {LaunchTowerJobConnectionStringArgName}<connection-string> {LaunchTowerJobTemplatedIdArgName}<job-template-id>");
+                Console.WriteLine($"Usage: {AppDomain.CurrentDomain.FriendlyName} {LaunchTowerJobCmdName} {LaunchTowerJobConnectionStringArgName}<connection-string> {LaunchTowerJobTemplatedIdArgName}<job-template-id> [{LaunchTowerJobExtraVarsArgName}<extra-variables>]");
                 Environment.Exit(0);
             }
-            
+
             var cs = CleanArgument(LaunchTowerJobConnectionStringArgName, args[1]);
             var templateId = CleanArgument(LaunchTowerJobTemplatedIdArgName, args[2]);
-            
+            var extraVars = args.Length == 4 ? CleanArgument(LaunchTowerJobExtraVarsArgName, args[3]) : null;
 
             if (!int.TryParse(templateId, out id) || id < 0)
             {
@@ -71,21 +72,29 @@ namespace AdaptiveProvider.Utils
             try
             {
                 Console.WriteLine($"> Starting Ansible Tower Job...");
-                var service = new TowerService(CleanArgument(LaunchTowerJobConnectionStringArgName, args[1]));
+                var service = new TowerService(cs);
 
                 Console.WriteLine($"> Testing authentication...");
                 var serviceMap = service.EnsureAuthenticated().Result;
                 Console.WriteLine($">> authenticated to service. Ping to '{serviceMap.Ping}'.{Environment.NewLine}");
 
-                Console.WriteLine($"> Launching job template {id}...");
-                var job = service.LaunchJobTemplate(id);
-                Console.WriteLine($">> job execution completed at '{job.Finished}'.{Environment.NewLine}");
+                if (extraVars == null)
+                {
+                    Console.WriteLine($"> Launching job template {id}...{Environment.NewLine}");
+                }
+                else
+                {
+                    Console.WriteLine($"> Launching job template {id} with extra varaibles:{Environment.NewLine}{extraVars}{Environment.NewLine}");
+                }
+
+                var job = service.LaunchJobTemplate(id, extraVars);
+                Console.WriteLine($">> job '{job.JobUrl}' execution completed at '{job.Finished}'.{Environment.NewLine}");
 
             }
             catch (Exception ex)
             {
                 Console.Error.WriteLine($"[!] Job execution failed:{Environment.NewLine}{ex.Message}");
-                Environment.Exit(-1); 
+                Environment.Exit(-1);
             }
         }
 
@@ -114,13 +123,13 @@ namespace AdaptiveProvider.Utils
                     Console.Error.WriteLine("Invalid cypher format.");
                     Environment.Exit(-1);
                 }
-                
+
             }
         }
 
         private static string CleanArgument(string argumentName, string argument)
         {
-            var input = (argument.Length> argumentName.Length?argument:string.Empty).Substring(argumentName.Length);
+            var input = (argument.Length > argumentName.Length ? argument : string.Empty).Substring(argumentName.Length);
 
             if ((input.StartsWith('"') && input.EndsWith('"')) ||
                 (input.StartsWith('\'') && input.EndsWith('\'')))

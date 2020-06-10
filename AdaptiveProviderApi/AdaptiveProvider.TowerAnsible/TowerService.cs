@@ -106,10 +106,20 @@ namespace AdaptiveProvider.TowerAnsible
         private async Task<O> Post<I, O>(string resource, I payload)
         {
             var request = new HttpRequestMessage(HttpMethod.Post, new Uri(_towerUri, resource));
+            string content;
 
             request.Headers.Authorization = GetAuthenticationHeader();
 
-            request.Content = new StringContent(JsonSerializer.Serialize<I>(payload), Encoding.UTF8, "application/json");
+            if (payload is string)
+            {
+                content = payload as string;
+            }
+            else
+            {
+                content = JsonSerializer.Serialize<I>(payload);
+            }
+
+            request.Content = new StringContent(content, Encoding.UTF8, "application/json");
 
             var response = await _httpClient.SendAsync(request);
 
@@ -159,9 +169,17 @@ namespace AdaptiveProvider.TowerAnsible
         public async Task<Job> LaunchJobTemplateAsync(int templateId, object extraVariables)
         {
             await EnsureAuthenticated();
+            Job job;
 
-            var payload = new JobLaunch(extraVariables);
-            var job = await Post<JobLaunch, Job>($"{_apiMap.Job_templates}{templateId}/launch/", payload);
+            if (extraVariables is string)
+            {
+                job = await Post<string, Job>($"{_apiMap.Job_templates}{templateId}/launch/", extraVariables as string);
+            }
+            else 
+            {
+                var payload = new JobLaunch(extraVariables);
+                job = await Post<JobLaunch, Job>($"{_apiMap.Job_templates}{templateId}/launch/", payload);
+            }
 
             while (job.Status == "waiting" || job.Status == "pending" || job.Status == "running")
             {
@@ -187,6 +205,11 @@ namespace AdaptiveProvider.TowerAnsible
         {
             try
             {
+                if (extraVariables == null)
+                {
+                    extraVariables = new { };
+                }
+
                 var job = LaunchJobTemplateAsync(templateId, extraVariables).Result;
                 return job;
             }

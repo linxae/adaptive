@@ -90,6 +90,28 @@ namespace AdaptiveProvider.TowerAnsible.Tests
         }
 
         [TestMethod]
+        public void LaunchJobTemplateWithExtraVarsStringTest()
+        {
+            using (var ts = new TowerService(_url, _basicCredential, skipCertificateValidation: true))
+            {
+                var job = ts.LaunchJobTemplate(8, @"{""extra_vars"":{""user_name"":""admin""}}");
+
+                Assert.IsFalse(job.Failed);
+            }
+        }
+
+        [TestMethod]
+        public void LaunchJobTemplateWithNullExtraVarsTest()
+        {
+            using (var ts = new TowerService(_url, _basicCredential, skipCertificateValidation: true))
+            {
+                var job = ts.LaunchJobTemplate(7, null);
+
+                Assert.IsFalse(job.Failed);
+            }
+        }
+
+        [TestMethod]
         public void SerializeJobLaunch()
         {
             var payload = new JobLaunch() {

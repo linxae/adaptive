@@ -2,7 +2,7 @@
   "profiles": {
     "AdaptiveProvider.Utils": {
       "commandName": "Project",
-      "commandLineArgs": "--launchTowerJob -connectionString:\"Basic>admin#AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAbk5J32RSikGwAM93LvNf8QAAAAACAAAAAAAQZgAAAAEAACAAAADJ1GJVsUXLhL/YegCQAu7sPiNgDZgbIgZmwIrugpqBNwAAAAAOgAAAAAIAACAAAABZ5GrByTnFerTMLplxcs/6/IRQSUFECAo7EH1zz7BElCAAAAANvuPgCGaSgwrdlp9ob6lNCPlugFrtIiMg7s63W+RSuEAAAACZbXcX7Ac1Hm7Li0cEwVQAUHHKOh1a4GWnYyGyI0L3fW0HfRYkjj+jSIbGWqlPTflmKRnQ09XKj8uEk08Tf3zb@https://ec2-18-222-136-247.us-east-2.compute.amazonaws.com/!y\" -jobTemplatedId:7"
+      "commandLineArgs": "--launchTowerJob -connectionString:\"Basic>admin#AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAbk5J32RSikGwAM93LvNf8QAAAAACAAAAAAAQZgAAAAEAACAAAADJ1GJVsUXLhL/YegCQAu7sPiNgDZgbIgZmwIrugpqBNwAAAAAOgAAAAAIAACAAAABZ5GrByTnFerTMLplxcs/6/IRQSUFECAo7EH1zz7BElCAAAAANvuPgCGaSgwrdlp9ob6lNCPlugFrtIiMg7s63W+RSuEAAAACZbXcX7Ac1Hm7Li0cEwVQAUHHKOh1a4GWnYyGyI0L3fW0HfRYkjj+jSIbGWqlPTflmKRnQ09XKj8uEk08Tf3zb@https://ec2-18-216-9-148.us-east-2.compute.amazonaws.com/!y\" -jobTemplatedId:8 -extravars:\"{\"\"extra_vars\"\":{\"\"user_name\"\":\"\"admin\"\"}}\""
     }
   }
 }

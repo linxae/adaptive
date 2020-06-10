@@ -35,10 +35,15 @@ type providerAPI struct {
 
 // CloudResource represents the provider API exchange object
 type CloudResource struct {
-	Type_ string `json:"Type"`
-	Name  string
-	Id    string
-	Data  map[string]string
+	Type string
+	Id   string
+	Data map[string]string
+}
+
+// CloudResourceSchema represents the cloud resource structure
+type CloudResourceSchema struct {
+	Type       string
+	Attributes map[string]string
 }
 
 // initResourceAPI inits the ResourceApi
@@ -131,7 +136,7 @@ func (api *providerAPI) createResource(r *CloudResource) (*CloudResource, error)
 	}
 
 	// Attempt to read from an upstream API
-	response, err := api.client.Post(api.resourceURL(r.Type_, ""), "application/json", bytes.NewBuffer(jsonData))
+	response, err := api.client.Post(api.resourceURL(r.Type, ""), "application/json", bytes.NewBuffer(jsonData))
 
 	if err != nil {
 		log.Printf("[WARN][ADAPTIVE] >> Could not connect to the Provider API: %v.", err)

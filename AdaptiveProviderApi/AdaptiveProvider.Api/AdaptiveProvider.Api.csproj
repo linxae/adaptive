@@ -1,0 +1,37 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="IProvisionerConfiguration.cs" />
+    <Compile Remove="ProvisionerConfiguration.cs" />
+    <Compile Remove="ResourceConfiguration.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="LiteDB" Version="5.0.8">
+      <PrivateAssets>true</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Management.Infrastructure" Version="2.0.0" />
+    <PackageReference Include="Microsoft.PowerShell.Commands.Diagnostics" Version="7.0.1">
+      <PrivateAssets>true</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.PowerShell.SDK" Version="7.0.1">
+      <PrivateAssets>true</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.WSMan.Management" Version="7.0.1">
+      <PrivateAssets>true</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AdaptiveProvider.Core\AdaptiveProvider.Core.csproj" />
+    <ProjectReference Include="..\AdaptiveProvider.Data\AdaptiveProvider.Data.csproj" />
+    <ProjectReference Include="..\AdaptiveProvider.PowerShell\AdaptiveProvider.PowerShell.csproj" />
+    <ProjectReference Include="..\AdaptiveProvider.TowerAnsible\AdaptiveProvider.TowerAnsible.csproj" />
+    <ProjectReference Include="..\AdaptiveProvider.Utils\AdaptiveProvider.Utils.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,27 @@
+{
+    "adaptive_server": {      
+      "Type": "Powershell",
+      "Handler": "adaptive_server.ps1",
+      "Read": "ReadServer",
+      "Create": "CreateServer",
+      "Update": "UpdateServer",
+      "Delete": "DeleteServer"
+    },
+    "adaptive_vip": {
+        "Type": "Powershell",
+        "Handler": "adaptive_vip.ps1",
+        "Read": "ReadVIP",
+        "Create": "CreateVIP",
+        "Update": "UpdateVIP",
+        "Delete": "DeleteVIP"
+    },
+    "adaptive_firewall_rule": {
+      "Type": "Powershell",
+      "Handler": "adaptive_firewall_rule.ps1",
+      "Read": "ReadFirewallRule",
+      "Create": "CreateFirewallRule",
+      "Update": "UpdateFirewallRule",
+      "Delete": "DeleteFirewallRule"
+    }
+  }
+  

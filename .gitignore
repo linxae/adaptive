@@ -94,6 +94,7 @@ msbuild.wrn
 # Other
 tests/package/adaptive/
 tests/package/terraform/
+tests/package/patch/
 *.ldb
 
 

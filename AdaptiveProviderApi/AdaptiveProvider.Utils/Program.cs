@@ -1,5 +1,7 @@
 ﻿using System;
+using System.IO;
 using System.Runtime.CompilerServices;
+using System.Text;
 using AdaptiveProvider.Core.Configuration;
 using AdaptiveProvider.TowerAnsible;
 
@@ -63,6 +65,11 @@ namespace AdaptiveProvider.Utils
             var cs = CleanArgument(LaunchTowerJobConnectionStringArgName, args[1]);
             var templateId = CleanArgument(LaunchTowerJobTemplatedIdArgName, args[2]);
             var extraVars = args.Length == 4 ? CleanArgument(LaunchTowerJobExtraVarsArgName, args[3]) : null;
+
+            if (extraVars != null && File.Exists(extraVars))
+            {
+                extraVars = File.ReadAllText(extraVars, Encoding.UTF8);
+            }
 
             if (!int.TryParse(templateId, out id) || id < 0)
             {

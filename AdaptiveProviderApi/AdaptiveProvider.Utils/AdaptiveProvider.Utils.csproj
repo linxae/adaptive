@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -8,6 +8,12 @@
   <ItemGroup>
     <ProjectReference Include="..\AdaptiveProvider.Core\AdaptiveProvider.Core.csproj" />
     <ProjectReference Include="..\AdaptiveProvider.TowerAnsible\AdaptiveProvider.TowerAnsible.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="TowerPayloadTestFile.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

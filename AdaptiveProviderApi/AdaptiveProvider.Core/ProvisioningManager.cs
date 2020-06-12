@@ -28,18 +28,9 @@ namespace AdaptiveProvider.Core
             {
                 try
                 {
-                    var plugin = Type.GetType(serviceConfig.Value.ServicePlugin, throwOnError: false, ignoreCase: true);
-
-                    if (plugin != null)
-                    {
-                        var service = Activator.CreateInstance(plugin, serviceConfig.Value.ConnectionString);
-
-                        provisioningServices.Add(serviceConfig.Key, service);
-                    }
-                    else
-                    {
-                        _logger.LogWarning($"Service plugin loading failed: '{serviceConfig.Value.ServicePlugin}'");
-                    }
+                    var plugin = Type.GetType(serviceConfig.Value.ServicePlugin, throwOnError: true, ignoreCase: true);
+                    var service = Activator.CreateInstance(plugin, serviceConfig.Value.ConnectionString);
+                    provisioningServices.Add(serviceConfig.Key, service);
                 }
                 catch (Exception ex)
                 {
@@ -49,9 +40,7 @@ namespace AdaptiveProvider.Core
                     {
                         _logger.LogWarning($"More details>> : {ex.InnerException.Message}");
                     }
-                    
                 }
-                
             }
 
             return provisioningServices;

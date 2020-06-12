@@ -88,12 +88,15 @@ func initializeProvider(name string, schemas *tfjson.ProviderSchemas) *schema.Pr
 	for pkey, pattr := range providerConfig.Block.Attributes {
 		log.Printf("[TRACE][ADAPTIVE] >>    <" + pkey + "> [" + pattr.AttributeType.FriendlyName() + "]")
 
-		provider.Schema[pkey] = &schema.Schema{
-			Type:        getValueTypeFromType(pattr.AttributeType),
-			Required:    pattr.Required,
-			Optional:    pattr.Optional,
-			DefaultFunc: schema.EnvDefaultFunc(pkey, nil),
-			Description: pattr.Description,
+		provider.Schema[pkey] = createSchemaByType(pattr.AttributeType)
+
+		provider.Schema[pkey].Required = pattr.Required
+		provider.Schema[pkey].Optional = pattr.Optional
+		provider.Schema[pkey].DefaultFunc = schema.EnvDefaultFunc(pkey, nil)
+		provider.Schema[pkey].Description = pattr.Description
+
+		if pattr.Required == false && pattr.Optional == false && pattr.Computed == false {
+			provider.Schema[pkey].Optional = true
 		}
 	}
 
@@ -132,17 +135,18 @@ func initializeProvider(name string, schemas *tfjson.ProviderSchemas) *schema.Pr
 		for akey, rattr := range resourceConfig.Block.Attributes {
 			log.Printf("[TRACE][ADAPTIVE] >>    <" + akey + "> [" + rattr.AttributeType.FriendlyName() + "]")
 
-			resource.Schema[akey] = &schema.Schema{
-				Type:        getValueTypeFromType(rattr.AttributeType),
-				Required:    rattr.Required,
-				Computed:    rattr.Computed,
-				Description: rattr.Description,
+			resource.Schema[akey] = createSchemaByType(rattr.AttributeType)
+
+			resource.Schema[akey].Required = rattr.Required
+			resource.Schema[akey].Optional = rattr.Optional
+			resource.Schema[akey].Computed = rattr.Computed
+			resource.Schema[akey].Description = rattr.Description
+
+			if rattr.Required == false && rattr.Optional == false && rattr.Computed == false {
+				resource.Schema[akey].Optional = true
 			}
 
-			if resource.Schema[akey].Type == schema.TypeList {
-				resource.Schema[akey].Elem = &schema.Schema{Type: schema.TypeString}
-			}
-
+			//cache the attribute type to be used for the data conversion
 			resourceSchema.Attributes[akey] = resource.Schema[akey].Type.String()
 		}
 
@@ -170,31 +174,50 @@ func configureProvider(d *schema.ResourceData) (interface{}, error) {
 	return api, nil
 }
 
-func getValueTypeFromType(t cty.Type) schema.ValueType {
+//https://www.terraform.io/docs/configuration/types.html
+//https://www.terraform.io/docs/extend/schemas/schema-types.html
+func createSchemaByType(t cty.Type) *schema.Schema {
 
-	if strings.HasPrefix(t.FriendlyName(), "list") {
-		return schema.TypeList
+	typeSchema := &schema.Schema{}
+
+	if t.IsPrimitiveType() {
+		switch t {
+		case cty.Bool:
+			typeSchema.Type = schema.TypeBool
+		case cty.Number:
+			typeSchema.Type = schema.TypeFloat
+		case cty.String:
+			typeSchema.Type = schema.TypeString
+		default:
+			log.Panic("'%v' is not a supported primitive type", t.FriendlyName())
+		}
+	} else if t.IsCollectionType() {
+		if t.IsListType() {
+			typeSchema.Type = schema.TypeList
+		} else if t.IsMapType() {
+			typeSchema.Type = schema.TypeMap
+		} else if t.IsSetType() {
+			typeSchema.Type = schema.TypeSet
+		} else {
+			log.Panic("'%v' is not a supported collection type", t.FriendlyName())
+		}
+
+		typeSchema.Elem = createSchemaByType(t.ElementType())
+	} else if t.IsObjectType() {
+		log.Panic("'%v': object types are not supported ", t.FriendlyName())
+
+	} else if t.IsTupleType() {
+		log.Panic("'%v': tuple types are not supported ", t.FriendlyName())
+
+	} else {
+		log.Panic("'%v' is not a supported type", t.FriendlyName())
 	}
 
-	switch t.FriendlyName() {
-	case "bool":
-		return schema.TypeBool
-	case "number":
-		return schema.TypeInt
-	//case "number":
-	//	return schema.TypeFloat
-	case "string":
-		return schema.TypeString
-	case "list":
-		return schema.TypeList
-	case "map":
-		return schema.TypeMap
-	case "set":
-		return schema.TypeSet
-	/*case "object":
-	return schema.typeObject*/
-	default:
-		return schema.TypeInvalid
+	if typeSchema.Elem == nil {
+		log.Printf("[TRACE][ADAPTIVE] >>    type: %v", typeSchema.Type.String())
+	} else {
+		log.Printf("[TRACE][ADAPTIVE] >>    type: %v[%v]", typeSchema.Type.String(), typeSchema.Elem.(*schema.Schema).Type.String())
 	}
 
+	return typeSchema
 }

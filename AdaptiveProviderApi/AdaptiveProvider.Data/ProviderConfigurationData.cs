@@ -15,5 +15,6 @@ namespace AdaptiveProvider.Data
         public Dictionary<string, ResourceConfigurationData> ResourcesConfiguration { get; set; }
         public Dictionary<string, ServiceConfigurationData> ServicesConfiguration { get; set; }
         public Dictionary<string, string> ProvidersSchema { get; set; }
+        public Dictionary<string, string> ConfigurationVariables { get; set; }
     }
 }

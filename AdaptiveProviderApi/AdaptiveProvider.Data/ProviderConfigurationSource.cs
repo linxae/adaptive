@@ -53,7 +53,14 @@ namespace AdaptiveProvider.Data
                     RequiredServices = (r.Value.RequiredServices ?? string.Empty).Split(ServiceSeparators, StringSplitOptions.RemoveEmptyEntries),
                 });
             }
-            
+
+            foreach (var v in configurationData.ConfigurationVariables)
+            {
+                if (v.Value == null) continue;
+
+                Configuration.Variables.Add(v.Key, v.Value);
+            }
+
         }
 
         public ProviderConfiguration Configuration { get; }

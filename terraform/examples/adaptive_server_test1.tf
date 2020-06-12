@@ -42,7 +42,7 @@ resource "adaptive_vip" "hlb1" {
 resource "adaptive_firewall_rule" "fw_rule1" {
   count=var.server_count
   source_adress = adaptive_server.web-server1[count.index].fe_ip //adaptive_server.web-server1[*].fe_ip
-  source_port = "123"
+  source_port = 123
   dest_adress = adaptive_server.web-server1[count.index].be_ip //adaptive_server.web-server1[*].fe_ip
   dest_port = "456"
 }

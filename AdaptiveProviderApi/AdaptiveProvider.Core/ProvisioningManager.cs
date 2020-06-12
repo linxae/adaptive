@@ -57,7 +57,7 @@ namespace AdaptiveProvider.Core
             return provisioningServices;
         }
 
-        private IProvisioningService GetProvisioningService(CloudResource resource)
+        private IProvisioningService ConfigureResourceServices(CloudResource resource)
         {
             if (!_provisionerConfiguration.Resources.ContainsKey(resource.Type))
             {
@@ -103,13 +103,14 @@ namespace AdaptiveProvider.Core
             }
 
             resource.RequiredServices = requiredServices;
+            resource.ConfigurationVariables = _provisionerConfiguration.Variables;
 
             return provisioningService;
         }
 
         public CloudResource CreateResource(CloudResource resource)
         {
-            var provisioningService = GetProvisioningService(resource);
+            var provisioningService = ConfigureResourceServices(resource);
 
             var result = provisioningService.Create(resource);
             return result;
@@ -118,7 +119,7 @@ namespace AdaptiveProvider.Core
         public CloudResource ReadResource(string type, string id)
         {
             var resource = new CloudResource() { Type = type, Id = id };
-            var provisioningService = GetProvisioningService(resource);
+            var provisioningService = ConfigureResourceServices(resource);
 
             var result = provisioningService.Read(resource);
             return result;
@@ -126,7 +127,7 @@ namespace AdaptiveProvider.Core
 
         public CloudResource UpdateResource(CloudResource resource)
         {
-            var provisioningService = GetProvisioningService(resource);
+            var provisioningService = ConfigureResourceServices(resource);
 
             var result = provisioningService.Update(resource);
             return result;
@@ -134,7 +135,7 @@ namespace AdaptiveProvider.Core
 
         public CloudResource DestroyResource(CloudResource resource)
         {
-            var provisioningService = GetProvisioningService(resource);
+            var provisioningService = ConfigureResourceServices(resource);
             var result = provisioningService.Delete(resource);
             return result;
         }

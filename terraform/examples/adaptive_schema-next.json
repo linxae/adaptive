@@ -1,0 +1,135 @@
+{
+    "format_version": "0.1",
+    "provider_schemas": {
+        "adaptive": {
+            "provider": {
+                "version": 0,
+                "block": {
+                    "attributes": {
+                        "endpoint": {
+                            "type": "string",
+                            "description": "The access endpoint for API operations.",
+                            "optional": true
+                        }
+                    }
+                }
+            },
+            "resource_schemas": {
+                "adaptive_server": {
+                    "version": 0,
+                    "block": {
+                        "attributes": {
+                            "app": {
+                                "type": "string",
+                                "required": true
+                            },
+                            "bundle": {
+                                "type": "string",
+                                "required": true
+                            },
+                            "domain": {
+                                "type": "string",
+                                "required": true
+                            },
+                            "zone": {
+                                "type": "string",
+                                "required": true
+                            },
+                            "model": {
+                                "type": "string",
+                                "required": true
+                            },
+                            "size": {
+                                "type": "string",
+                                "required": true
+                            },
+                            "instance": {
+                                "type": "string",
+                                "required": true
+                            },
+                            "name": {
+                                "type": "string",
+                                "computed": true
+                            },
+                            "fe_ip": {
+                                "type": "string",
+                                "computed": true
+                            },
+                            "be_ip": {
+                                "type": "string",
+                                "computed": true
+                            }
+                        }
+                    }
+                },
+                "adaptive_vip": {
+                    "version": 0,
+                    "block": {
+                        "attributes": {
+                            "zone": {
+                                "type": "string",
+                                "required": true
+                            },
+                            "adresses": {
+                                "type": [
+                                    "list",
+                                    "string"
+                                ],
+                                "required": true
+                            },
+                            "name": {
+                                "type": "string",
+                                "computed": true
+                            }                            
+                        }
+                    }
+                },
+                "adaptive_firewall_rule": {
+                    "version": 0,
+                    "block": {
+                        "attributes": {
+                            "source_adress": {
+                                "type": "string",
+                                "required": true
+                            },
+                            "source_port": {
+                                "type": "number",
+                                "required": true
+                            },
+                            "dest_adress": {
+                                "type": "string",
+                                "required": true
+                            },
+                            "dest_port": {
+                                "type": "number",
+                                "required": true
+                            },
+                            "options_str": {
+                                "type": [
+                                    "set",
+                                    "string"
+                                ],
+                                "required": false,
+                                "optional": true
+                            },
+                            "options_nbr": {
+                                "type": [
+                                    "set",
+                                    "number"
+                                ],
+                                "required": false
+                            },
+                            "config": {
+                                "type": [
+                                    "map",
+                                    "number"
+                                ],
+                                "required": false
+                            }                                                      
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

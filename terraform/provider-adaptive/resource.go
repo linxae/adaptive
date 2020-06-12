@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"log"
+	"strconv"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
@@ -81,15 +82,20 @@ func populateCloudResource(d *schema.ResourceData) (*CloudResource, error) {
 		return nil, fmt.Errorf("[TRACE][ADAPTIVE] >> Resource schema cache doesn't contain definition for [%v]", resource.Type)
 	}
 
+	var err error = nil
+
 	//iterate through the attributes and fill the resource data
 	for akey, atype := range SchemaCache[resource.Type].Attributes {
 		log.Printf("[TRACE][ADAPTIVE] >>  Populating  [%v]<%v>:%v", akey, atype, d.Get(akey))
 
 		switch v := d.Get(akey).(type) {
 		default:
-			log.Printf("[TRACE][ADAPTIVE] >>  unexpected type %T", v)
-		case string:
-			resource.Data[akey] = d.Get(akey).(string)
+			resource.Data[akey], err = convertToString(d.Get(akey))
+
+			if err != nil {
+				return nil, fmt.Errorf("Type %T of field [%v] is not supported", v, akey)
+			}
+
 		case []interface{}:
 			var buffer bytes.Buffer
 			for i, s := range d.Get(akey).([]interface{}) {
@@ -107,6 +113,36 @@ func populateCloudResource(d *schema.ResourceData) (*CloudResource, error) {
 
 	return resource, nil
 }
+
+func convertToString(v interface{}) (string, error) {
+	switch t := v.(type) {
+	default:
+		return "", fmt.Errorf("Type %T is not supported", t)
+	case string:
+		return v.(string), nil
+	case bool:
+		return strconv.FormatBool(v.(bool)), nil
+	case int64:
+		return strconv.FormatInt(v.(int64), 10), nil
+	case float64:
+		return strconv.FormatFloat(v.(float64), 'f', -1, 64), nil
+	}
+}
+
+// func convertFromString(v string) (interface{}, error) {
+// 	switch t := v.(type) {
+// 	default:
+// 		return "", fmt.Errorf("Type %T is not supported")
+// 	case string:
+// 		return v.(string), nil
+// 	case bool:
+// 		return v.(bool), nil
+// 	case float64:
+// 		return v.(float64), nil
+// 	case float32:
+// 		return v.(float32), nil
+// 	}
+// }
 
 func createResource(rd *schema.ResourceData, api interface{}) error {
 	log.Printf("[TRACE][ADAPTIVE] >> Creating resource")

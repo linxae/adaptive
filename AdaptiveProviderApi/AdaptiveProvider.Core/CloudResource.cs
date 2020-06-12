@@ -21,5 +21,8 @@ namespace AdaptiveProvider.Core
 
         [JsonIgnore]
         public Dictionary<string, object> RequiredServices { get; set; }
+
+        [JsonIgnore]
+        public Dictionary<string, string> ConfigurationVariables { get; set; }
     }
 }

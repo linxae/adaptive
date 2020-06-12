@@ -93,7 +93,7 @@
                                 "required": true
                             },
                             "source_port": {
-                                "type": "string",
+                                "type": "number",
                                 "required": true
                             },
                             "dest_adress": {
@@ -101,9 +101,9 @@
                                 "required": true
                             },
                             "dest_port": {
-                                "type": "string",
+                                "type": "number",
                                 "required": true
-                            }                          
+                            }                                                  
                         }
                     }
                 }

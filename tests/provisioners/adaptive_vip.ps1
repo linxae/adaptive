@@ -30,15 +30,18 @@ function Create([Parameter(Mandatory=$true)] $Resource)
     $Resource.Data.name = $Resource.Data.zone.ToUpper().Substring(0,1) + [DateTime]::Now.Minute.ToString("d2") + [DateTime]::Now.Second.ToString("d2")
     $Resource.Id = $Resource.Data.name
 
-    $jobInput = [extra_vars]::New("$($Resource.Data.name)")
-    $job = $Resource.RequiredServices["AnsibleTower"].RunJobTemplate(8, $jobInput);
+    #$jobInput = [extra_vars]::New("$($Resource.Data.name)")
+    #$job = $Resource.RequiredServices["AnsibleTower"].RunJobTemplate(8, $jobInput);
+    #Set-Content (BuildJobFilePath $Resource) -value (ConvertTo-Json $job)
+#
+    #if(!$job -or $job.Failed)
+    #{
+    #    throw "Failed creating resource $($Resource.Data.name). $job.Description" 
+    #}
+    
+    $c = $Resource.ConfigurationVariables["AnsibleTowerToken"]
+    $job = $Resource.RequiredServices["VaultService"].Decrypt($c)
     Set-Content (BuildJobFilePath $Resource) -value (ConvertTo-Json $job)
-
-    if(!$job -or $job.Failed)
-    {
-        throw "Failed creating resource $($Resource.Data.name). $job.Description" 
-    }
-	
     Set-Content (BuildFilePath $Resource) -value (ConvertTo-Json $Resource)    
 
 	return $Resource

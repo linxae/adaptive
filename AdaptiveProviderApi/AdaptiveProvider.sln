@@ -19,7 +19,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tower", "Tower", "{DD954C4D
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PowerShell", "PowerShell", "{24E90CD9-2899-419F-A995-6F888C690BED}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdaptiveProvider.Utils", "AdaptiveProvider.Utils\AdaptiveProvider.Utils.csproj", "{D3D51ED5-A4C3-4DC9-A80F-07B410BD1938}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdaptiveProvider.Utils", "AdaptiveProvider.Utils\AdaptiveProvider.Utils.csproj", "{D3D51ED5-A4C3-4DC9-A80F-07B410BD1938}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdaptiveProvider.Vault", "AdaptiveProvider.Vault\AdaptiveProvider.Vault.csproj", "{D3C0D520-0858-41D7-8A33-635C7C75023F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -55,6 +57,10 @@ Global
 		{D3D51ED5-A4C3-4DC9-A80F-07B410BD1938}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D3D51ED5-A4C3-4DC9-A80F-07B410BD1938}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D3D51ED5-A4C3-4DC9-A80F-07B410BD1938}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D3C0D520-0858-41D7-8A33-635C7C75023F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D3C0D520-0858-41D7-8A33-635C7C75023F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D3C0D520-0858-41D7-8A33-635C7C75023F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D3C0D520-0858-41D7-8A33-635C7C75023F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

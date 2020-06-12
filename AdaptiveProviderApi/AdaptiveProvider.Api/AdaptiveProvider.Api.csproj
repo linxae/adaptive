@@ -32,6 +32,7 @@
     <ProjectReference Include="..\AdaptiveProvider.PowerShell\AdaptiveProvider.PowerShell.csproj" />
     <ProjectReference Include="..\AdaptiveProvider.TowerAnsible\AdaptiveProvider.TowerAnsible.csproj" />
     <ProjectReference Include="..\AdaptiveProvider.Utils\AdaptiveProvider.Utils.csproj" />
+    <ProjectReference Include="..\AdaptiveProvider.Vault\AdaptiveProvider.Vault.csproj" />
   </ItemGroup>
 
 </Project>

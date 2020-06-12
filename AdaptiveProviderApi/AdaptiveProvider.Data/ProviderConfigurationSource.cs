@@ -1,6 +1,7 @@
 ﻿using AdaptiveProvider.Core.Configuration;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace AdaptiveProvider.Data
@@ -50,7 +51,7 @@ namespace AdaptiveProvider.Data
                     ResourceType = r.Key,
                     ProvisiningAdapter = Configuration.Services[r.Value.ProvisiningAdapter],
                     ProvisiningHandler = r.Value.ProvisiningHandler,
-                    RequiredServices = (r.Value.RequiredServices ?? string.Empty).Split(ServiceSeparators, StringSplitOptions.RemoveEmptyEntries),
+                    RequiredServices = (r.Value.RequiredServices ?? string.Empty).Split(ServiceSeparators, StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim()).ToArray(),
                 });
             }
 

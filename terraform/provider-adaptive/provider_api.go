@@ -23,6 +23,7 @@ const (
 	statusCreated   = 201
 	statusCompleted = 200
 	statusFound     = 200
+	statusDeleted   = 204
 	statusNotFound  = 404
 )
 
@@ -200,6 +201,86 @@ func (api *providerAPI) getResource(type_ string, id string) (*CloudResource, er
 		return nil, nil
 	} else {
 		err = fmt.Errorf("Provider API returned status %d", response.StatusCode)
+		log.Printf("[WARN][ADAPTIVE] >> %v.", err)
+		return nil, err
+	}
+}
+
+// updateResource update a resource
+func (api *providerAPI) updateResource(r *CloudResource) (*CloudResource, error) {
+	log.Printf("[TRACE][ADAPTIVE] >> UpdateResource")
+
+	jsonData, err := json.Marshal(r)
+
+	if err != nil {
+		log.Printf("[TRACE][ADAPTIVE] >> Failed to serialize resource")
+		return nil, err
+	}
+
+	request, err := http.NewRequest("PATCH", api.resourceURL(r.Type, ""), bytes.NewBuffer(jsonData))
+	request.Header.Add("Content-Type", "application/json")
+
+	response, err := api.client.Do(request)
+
+	if err != nil {
+		log.Printf("[WARN][ADAPTIVE] >> Could not connect to the Provider API: %v.", err)
+		return nil, err
+	}
+
+	if response == nil {
+		return nil, fmt.Errorf("[WARN][ADAPTIVE] >> Invalid response.")
+	}
+
+	if response.StatusCode == statusCompleted {
+
+		defer response.Body.Close()
+		var resource *CloudResource
+
+		if err = json.NewDecoder(response.Body).Decode(&resource); err != nil {
+			log.Printf("[WARN][ADAPTIVE] >> Could not read resource: %v.", err)
+			return nil, err
+		}
+
+		return resource, nil
+
+	} else {
+		err = fmt.Errorf("Provider API returned invalid status %d", response.StatusCode)
+		log.Printf("[WARN][ADAPTIVE] >> %v.", err)
+		return nil, err
+	}
+}
+
+// deleteResource deletes a resource
+func (api *providerAPI) deleteResource(r *CloudResource) (*CloudResource, error) {
+	log.Printf("[TRACE][ADAPTIVE] >> DeleteResource")
+
+	jsonData, err := json.Marshal(r)
+
+	if err != nil {
+		log.Printf("[TRACE][ADAPTIVE] >> Failed to serialize resource")
+		return nil, err
+	}
+
+	request, err := http.NewRequest("DELETE", api.resourceURL(r.Type, ""), bytes.NewBuffer(jsonData))
+	request.Header.Add("Content-Type", "application/json")
+
+	response, err := api.client.Do(request)
+
+	if err != nil {
+		log.Printf("[WARN][ADAPTIVE] >> Could not connect to the Provider API: %v.", err)
+		return nil, err
+	}
+
+	if response == nil {
+		return nil, fmt.Errorf("[WARN][ADAPTIVE] >> Invalid response.")
+	}
+
+	if response.StatusCode == statusDeleted {
+
+		return nil, nil
+
+	} else {
+		err = fmt.Errorf("Provider API returned invalid status %d", response.StatusCode)
 		log.Printf("[WARN][ADAPTIVE] >> %v.", err)
 		return nil, err
 	}

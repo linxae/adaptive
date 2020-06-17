@@ -211,10 +211,68 @@ func readResource(rd *schema.ResourceData, api interface{}) error {
 	return nil
 }
 
-func updateResource(d *schema.ResourceData, m interface{}) error {
-	return readResource(d, m)
+func updateResource(rd *schema.ResourceData, api interface{}) error {
+	log.Printf("[TRACE][ADAPTIVE] >> Updating resource")
+
+	resource, err := populateCloudResource(rd)
+
+	if err != nil {
+		log.Printf("[TRACE][ADAPTIVE] >> Cloud Resource population failed!")
+		return err
+	}
+
+	resource, err = api.(*providerAPI).updateResource(resource)
+
+	if err != nil {
+		log.Printf("[TRACE][ADAPTIVE] >> Resource update failed!")
+		return err
+	}
+
+	if resource == nil {
+		return fmt.Errorf("Updated resource is not valid")
+	}
+
+	log.Printf("[TRACE][ADAPTIVE] >> Resource id: %v.", resource.Id)
+
+	err = populateResourceData(rd, resource)
+
+	if err != nil {
+		log.Printf("[WARN][ADAPTIVE] >> Resource data population from Cloud Resource failed!")
+		return err
+	}
+
+	err = readResource(rd, api)
+
+	if err != nil {
+		log.Printf("[WARN][ADAPTIVE] >> Resource not found.")
+		return err
+	}
+
+	log.Printf("[TRACE][ADAPTIVE] >> Resource updated.")
+	return nil
 }
 
-func deleteResource(d *schema.ResourceData, m interface{}) error {
+func deleteResource(rd *schema.ResourceData, api interface{}) error {
+	log.Printf("[TRACE][ADAPTIVE] >> Deleting resource")
+
+	resource, err := populateCloudResource(rd)
+
+	if err != nil {
+		log.Printf("[TRACE][ADAPTIVE] >> Cloud Resource population failed!")
+		return err
+	}
+
+	resource, err = api.(*providerAPI).deleteResource(resource)
+
+	if err != nil {
+		log.Printf("[TRACE][ADAPTIVE] >> Resource delete failed!")
+		return err
+	}
+
+	if resource != nil {
+		return fmt.Errorf("Resource couldn't be deleted")
+	}
+
+	log.Printf("[TRACE][ADAPTIVE] >> Resource deleted.")
 	return nil
 }

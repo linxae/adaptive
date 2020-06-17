@@ -66,13 +66,13 @@ namespace PrivateCloudApi.Controllers
         [HttpDelete("{type}")]
         public ActionResult<CloudResource> Delete(string type, CloudResource resource)
         {
-            _logger.Log(LogLevel.Information, "Creating {0}:{1}...", type, resource);
+            _logger.Log(LogLevel.Information, "Deleting {0}:{1}...", type, resource);
 
             resource = _provisioningManager.DestroyResource(resource);
 
             _logger.Log(LogLevel.Information, "Deleted {0}:{1}", type, resource);
 
-            return CreatedAtAction(nameof(Get), new { type = resource.Type, id = resource.Id }, resource);
+            return NoContent();
         }
     }
 }

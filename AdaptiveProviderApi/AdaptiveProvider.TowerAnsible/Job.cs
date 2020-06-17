@@ -5,6 +5,8 @@ namespace AdaptiveProvider.TowerAnsible
 {
     public class Job
     {
+        public string TowerServiceInfo { get; set; }
+
         [JsonPropertyName("job")]
         public int JobId { get; set; }
 

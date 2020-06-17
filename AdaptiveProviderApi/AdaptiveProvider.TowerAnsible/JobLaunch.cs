@@ -9,13 +9,17 @@ namespace AdaptiveProvider.TowerAnsible
             ExtraVars = new { };
         }
 
-        public JobLaunch(object extraVariables)
+        public JobLaunch(object extraVariables, string jobType)
         {
             ExtraVars = extraVariables;
+            JobType = jobType;
         }
 
 
         [JsonPropertyName("extra_vars")]
         public object ExtraVars { get; set; }
+
+        [JsonPropertyName("job_type")]
+        public string JobType { get; set; }
     }
 }

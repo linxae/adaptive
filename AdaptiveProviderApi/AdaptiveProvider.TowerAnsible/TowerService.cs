@@ -13,6 +13,7 @@ namespace AdaptiveProvider.TowerAnsible
 {
     public class TowerService : IDisposable
     {
+        private static readonly string ServiceVersionInfo = "AdaptiveProvider.TowerAnsible.TowerService v0.1";
         private static readonly string ApiVersion = "/api/v2/";
         //private static readonly string TokenResource = $"{ApiVersion}tokens/";
 
@@ -166,7 +167,7 @@ namespace AdaptiveProvider.TowerAnsible
             return _apiMap;
         }
 
-        public async Task<Job> LaunchJobTemplateAsync(int templateId, object extraVariables)
+        public async Task<Job> LaunchJobTemplateAsync(int templateId, object extraVariables, string jobType)
         {
             await EnsureAuthenticated();
             Job job;
@@ -177,7 +178,7 @@ namespace AdaptiveProvider.TowerAnsible
             }
             else 
             {
-                var payload = new JobLaunch(extraVariables);
+                var payload = new JobLaunch(extraVariables, jobType);
                 job = await Post<JobLaunch, Job>($"{_apiMap.Job_templates}{templateId}/launch/", payload);
             }
 
@@ -193,15 +194,16 @@ namespace AdaptiveProvider.TowerAnsible
                 throw new Exception($"Job {job.JobId} didn't complete successfully: {job.Status}");
             }
 
+            job.TowerServiceInfo = ServiceVersionInfo;
             return job;
         }
 
-        public Job LaunchJobTemplate(int templateId)
+        public Job LaunchJobTemplate(int templateId, string jobType)
         {
-            return LaunchJobTemplate(templateId, new { });
+            return LaunchJobTemplate(templateId, new { }, jobType);
         }
 
-        public Job LaunchJobTemplate(int templateId, object extraVariables)
+        public Job LaunchJobTemplate(int templateId, object extraVariables, string jobType)
         {
             try
             {
@@ -210,7 +212,7 @@ namespace AdaptiveProvider.TowerAnsible
                     extraVariables = new { };
                 }
 
-                var job = LaunchJobTemplateAsync(templateId, extraVariables).Result;
+                var job = LaunchJobTemplateAsync(templateId, extraVariables, jobType).Result;
                 return job;
             }
             catch (AggregateException ex)
@@ -227,7 +229,7 @@ namespace AdaptiveProvider.TowerAnsible
         {
             try
             {
-                var job = LaunchJobTemplate(templateId, extraVariables);
+                var job = LaunchJobTemplate(templateId, extraVariables, jobType:"run");
                 return job;
             }
             catch (Exception ex)

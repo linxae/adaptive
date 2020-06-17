@@ -72,7 +72,7 @@ namespace AdaptiveProvider.TowerAnsible.Tests
         {
             using (var ts = new TowerService(_url, _basicCredential, skipCertificateValidation: true))
             {
-                var job = ts.LaunchJobTemplate(7);
+                var job = ts.LaunchJobTemplate(7, "run");
 
                 Assert.IsFalse(job.Failed);
             }
@@ -83,7 +83,7 @@ namespace AdaptiveProvider.TowerAnsible.Tests
         {
             using (var ts = new TowerService(_url, _basicCredential, skipCertificateValidation: true))
             {
-                var job = ts.LaunchJobTemplate(8, new {user_name = "VS" });
+                var job = ts.LaunchJobTemplate(8, new {user_name = "VS" }, "run");
 
                 Assert.IsFalse(job.Failed);
             }
